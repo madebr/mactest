@@ -20,7 +20,7 @@ jobs:
       run: |
         cpack --help
         cd build
-        cpack -C Release -G dmg
+        cpack -C Release
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
