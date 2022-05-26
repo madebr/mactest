@@ -1,0 +1,29 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  Build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Configure (CMake)
+      run: |
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=prefix
+    - name: Build (CMake)
+      run: |
+        cmake --build build --config Release
+    - name: Install (CMake)
+      run: |
+        cmake --install build --config Release
+    - name: Package (CPack)
+      run: |
+        cpack --help
+        cd build
+        cpack -C Release -G dmg
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        path: |
+          build/*.dmg
+        if-no-files-found: ignore

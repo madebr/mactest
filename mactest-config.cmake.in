@@ -1,0 +1,3 @@
+set(mactest_FOUND TRUE)
+
+include("${CMAKE_CURRENT_LIST_DIR}/mactest-targets.cmake")
