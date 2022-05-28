@@ -6,6 +6,9 @@ jobs:
   Build:
     runs-on: macos-latest
     steps:
+    - name: Print environment
+      run: |
+        env
     - uses: actions/checkout@v2
     - name: Configure (CMake)
       run: |
