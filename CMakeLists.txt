@@ -21,7 +21,8 @@ set_target_properties(mactest PROPERTIES
     PUBLIC_HEADER "mactest.h;${CMAKE_CURRENT_BINARY_DIR}/mactest_exports.h"
 
     FRAMEWORK TRUE
-    FRAMEWORK_VERSION ABC
+    FRAMEWORK_VERSION "ABC"
+    MACOSX_FRAMEWORK_IDENTIFIER "io.github.madebr.mactest"
     OSX_ARCHITECTURES "arm64;x86_64"
 )
 
