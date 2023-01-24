@@ -21,9 +21,7 @@ jobs:
         cmake --install build --config Release
     - name: Package (CPack)
       run: |
-        cpack --help
-        cd build
-        cpack -C Release
+        cmake --build build --config Release --target package
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
