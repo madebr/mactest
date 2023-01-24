@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.22)
 project(mactest LANGUAGES C VERSION 0.1)
 
 include(CMakePackageConfigHelpers)
-include(GenerateExportHeader)
 include(GNUInstallDirs)
 
 add_library(mactest SHARED
     mactest.c
+    mactest.h
 )
 target_include_directories(mactest
     PUBLIC
@@ -14,11 +14,8 @@ target_include_directories(mactest
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDE_DIR}>"
 )
-generate_export_header(mactest
-    EXPORT_FILE_NAME mactest_exports.h
-)
 set_target_properties(mactest PROPERTIES
-    PUBLIC_HEADER "mactest.h;${CMAKE_CURRENT_BINARY_DIR}/mactest_exports.h"
+    PUBLIC_HEADER "mactest.h"
 
     FRAMEWORK TRUE
     FRAMEWORK_VERSION "ABC"
@@ -26,18 +23,48 @@ set_target_properties(mactest PROPERTIES
     OSX_ARCHITECTURES "arm64;x86_64"
 )
 
-add_executable(macmain main.c)
-target_link_libraries(macmain PRIVATE mactest)
+add_library(mactest-static STATIC
+    mactest.c
+    mactest.h
+)
+target_compile_definitions(mactest-static
+    PUBLIC MACTEST_STATIC
+)
+target_include_directories(mactest-static
+    PUBLIC
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>"
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDE_DIR}>"
+)
+set_target_properties(mactest-static PROPERTIES
+    PUBLIC_HEADER "mactest.h"
+
+    FRAMEWORK TRUE
+    FRAMEWORK_VERSION "ABC"
+    MACOSX_FRAMEWORK_IDENTIFIER "io.github.madebr.mactest"
+    OSX_ARCHITECTURES "arm64;x86_64"
+)
+if(NOT APPLE AND NOT MSVC)
+    set_target_properties(mactest-static PROPERTIES OUTPUT_NAME mactest)
+endif()
+
+#add_executable(macmain main.c)
+#target_link_libraries(macmain PRIVATE mactest)
+if(APPLE)
+    set(cmake_dir "mactest.framework/Resources")
+else()
+    set(cmake_dir "${CMAKE_INSTALL_LIBDIR}/cmake/mactest")
+endif()
 
 configure_package_config_file(mactest-config.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/mactest-config.cmake"
-    INSTALL_DESTINATION "Resources"
+    INSTALL_DESTINATION "${cmake_dir}"
     NO_SET_AND_CHECK_MACRO
 )
 write_basic_package_version_file(mactest-config-version.cmake
     COMPATIBILITY AnyNewerVersion
 )
 
-install(TARGETS mactest macmain EXPORT mactest_EXPORTS
+install(TARGETS mactest EXPORT mactest_EXPORTS
     PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
     ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
@@ -45,14 +72,27 @@ install(TARGETS mactest macmain EXPORT mactest_EXPORTS
     FRAMEWORK DESTINATION "."
 )
 install(EXPORT mactest_EXPORTS
-    DESTINATION "Resources"
+    DESTINATION "${cmake_dir}"
     NAMESPACE "mactest::"
     FILE "mactest-targets.cmake"
+)
+
+install(TARGETS mactest-static EXPORT macteststatic_EXPORTS
+    PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+    FRAMEWORK DESTINATION "."
+)
+install(EXPORT macteststatic_EXPORTS
+    DESTINATION "${cmake_dir}"
+    NAMESPACE "mactest::"
+    FILE "mactest-static-targets.cmake"
 )
 install(FILES
         "${CMAKE_CURRENT_BINARY_DIR}/mactest-config.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/mactest-config-version.cmake"
-    DESTINATION "Resources"
+    DESTINATION "${cmake_dir}"
 )
 
 if(APPLE)
