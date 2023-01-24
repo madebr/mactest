@@ -19,8 +19,10 @@ jobs:
     - name: Install (CMake)
       run: |
         cmake --install build --config Release
+        ( cd prefix; find . ) | LC_ALL=C sort -u
     - name: Package (CPack)
       run: |
+        cat -n build/cmake_install.cmake
         cmake --build build --config Release --target package
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
