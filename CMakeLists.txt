@@ -4,9 +4,11 @@ project(mactest LANGUAGES C VERSION 0.1)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
+set(resources "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 add_library(mactest SHARED
     mactest.c
     mactest.h
+    ${resources}
 )
 target_include_directories(mactest
     PUBLIC
@@ -21,6 +23,7 @@ set_target_properties(mactest PROPERTIES
     FRAMEWORK_VERSION "ABC"
     MACOSX_FRAMEWORK_IDENTIFIER "io.github.madebr.mactest"
     OSX_ARCHITECTURES "arm64;x86_64"
+    RESOURCES "${resources}"
 )
 
 add_library(mactest-static STATIC
@@ -82,6 +85,7 @@ install(TARGETS mactest-static EXPORT macteststatic_EXPORTS
     ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+    RESOURCE DESTINATION "Resources"
     FRAMEWORK DESTINATION "."
 )
 install(EXPORT macteststatic_EXPORTS
