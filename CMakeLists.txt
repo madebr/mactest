@@ -23,7 +23,7 @@ set_target_properties(mactest PROPERTIES
     FRAMEWORK_VERSION "ABC"
     MACOSX_FRAMEWORK_IDENTIFIER "io.github.madebr.mactest"
     OSX_ARCHITECTURES "arm64;x86_64"
-    RESOURCES "${resources}"
+    RESOURCE "${resources}"
 )
 
 add_library(mactest-static STATIC
