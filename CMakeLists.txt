@@ -40,7 +40,7 @@ set_target_properties(mactest PROPERTIES
 )
 
 if(APPLE)
-    set(cmake_dir "mactest.framework/Resources/CMake")
+    set(cmake_dir "mactest.framework/Versions/A/Resources/CMake")
 else()
     set(cmake_dir "${CMAKE_INSTALL_LIBDIR}/cmake/mactest")
 endif()
