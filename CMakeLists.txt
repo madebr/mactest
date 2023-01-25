@@ -40,7 +40,7 @@ target_include_directories(mactest-static
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDE_DIR}>"
 )
 set_target_properties(mactest-static PROPERTIES
-    PUBLIC_HEADER "mactest.h"
+    PUBLIC_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/mactest.h"
 
     FRAMEWORK TRUE
     FRAMEWORK_VERSION "ABC"
